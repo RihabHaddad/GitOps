@@ -17,3 +17,6 @@ spec:
         image: rihab26/nodejs-app:latest
         ports:
         - containerPort: 3000
+        env:
+        - name: MONGODB_CONNECTION_STRING
+          value: "mongodb://admin:securepassword123@mongo-service:27017"  # URI MongoDB avec le mot de passe
