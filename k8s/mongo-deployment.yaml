@@ -1,7 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongo-deployment
+  name: mongo
+  namespace: app-ns
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   replicas: 1
   selector:
@@ -12,25 +15,35 @@ spec:
       labels:
         app: mongo
     spec:
+      serviceAccountName: vault-mongodb-access
       containers:
       - name: mongo
         image: mongo:latest
+        command: ["mongod"]  
+        args:
+        - "--bind_ip_all"    
+        - "--auth"           
         ports:
         - containerPort: 27017
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
-          value: "admin"  
-        - name: MONGO_INITDB_ROOT_PASSWORD 
-          value: "securepassword123"  
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo-service
-spec:
-  selector:
-    app: mongo
-  ports:
-    - protocol: TCP
-      port: 27017
-      targetPort: 27017
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: password
+        volumeMounts:
+        - name: vault-secrets
+          mountPath: "/vault/secrets"
+          readOnly: true
+      volumes:
+      - name: vault-secrets
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "vault-mongodb"

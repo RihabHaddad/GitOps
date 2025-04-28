@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-secret-reader
+  namespace: app-ns
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-access-binding
+  namespace: app-ns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vault-secret-reader
+subjects:
+- kind: ServiceAccount
+  name: vault-mongodb-access
+  namespace: app-ns
+- kind: ServiceAccount
+  name: vault-app-access
+  namespace: app-ns

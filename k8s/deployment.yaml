@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nodejs-app
+  namespace: app-ns
 spec:
   replicas: 2
   selector:
@@ -12,11 +13,20 @@ spec:
       labels:
         app: nodejs-app
     spec:
+      serviceAccountName: vault-app-access
       containers:
       - name: nodejs-app
-        image: rihab26/nodejs-app:latest
+        image: rihab26/nodejs-app:be77428
         ports:
         - containerPort: 3001
+        - containerPort: 9090
         env:
-        - name: MONGODB_CONNECTION_STRING
-          value: "mongodb://admin:securepassword123@mongo-service:27017"  # URI MongoDB avec le mot de passe
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: connection_string
+      - name: node-exporter
+        image: prom/node-exporter
+        ports:
+        - containerPort: 9100
