@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: nodejs-app
+  namespace: app-ns
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels:
+        app: nodejs-app
+    spec:
+      serviceAccountName: vault-app-access
+      containers:
+        - name: nodejs-app
+          image: rihab26/nodejs-app:latest 
+          ports:
+            - containerPort: 3001
+            - containerPort: 9090
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: connection_string
+        - name: node-exporter
+          image: prom/node-exporter
+          ports:
+            - containerPort: 9100
+  strategy:
+    canary:
+      steps:
+        - setWeight: 30
+        - pause: { duration: 30s }
+        - setWeight: 60
+        - pause: { duration: 30s }
+        - setWeight: 100

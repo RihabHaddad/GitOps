@@ -47,3 +47,17 @@ spec:
           readOnly: true
           volumeAttributes:
             secretProviderClass: "vault-mongodb"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: app-ns
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+  clusterIP: None
