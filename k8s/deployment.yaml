@@ -16,7 +16,7 @@ spec:
       serviceAccountName: vault-app-access
       containers:
       - name: nodejs-app
-        image: rihab26/nodejs-app:90b8400
+        image: rihab26/nodejs-app:c42d9b3
         ports:
         - containerPort: 3001
         - containerPort: 9090
@@ -27,6 +27,6 @@ spec:
               name: mongodb
               key: connection_string
       - name: node-exporter
-        image: rihab26/nodejs-app:90b8400
+        image: rihab26/nodejs-app:c42d9b3
         ports:
         - containerPort: 9100
