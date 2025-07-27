@@ -17,7 +17,7 @@ spec:
       serviceAccountName: vault-app-access
       containers:
         - name: nodejs-app
-          image: rihab26/nodejs-app:latest 
+          image: rihab26/nodejs-app:20250727-187ebf1
           ports:
             - containerPort: 3001
             - containerPort: 9090
@@ -34,8 +34,16 @@ spec:
   strategy:
     canary:
       steps:
-        - setWeight: 30
-        - pause: { duration: 30s }
-        - setWeight: 60
-        - pause: { duration: 30s }
+        - setWeight: 20
+        - pause:
+            duration: 30s
+        - setWeight: 50
+        - pause:
+            duration: 30s
+        - analysis:
+            templates:
+              - templateName: success-rate
+            args:
+              - name: service-name
+                value: nodejs-app
         - setWeight: 100
