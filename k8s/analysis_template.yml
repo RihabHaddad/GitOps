@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+  namespace: app-ns
+spec:
+  metrics:
+  - name: request-success-rate
+    interval: 30s
+    count: 5
+    successCondition: result[0] >= 0.95
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://prometheus-operated.monitoring.svc:9090
+        query: |
+          sum(rate(http_requests_total{status=~"2..",service="nodejs-app"}[1m]))
+          /
+          sum(rate(http_requests_total{service="nodejs-app"}[1m]))
