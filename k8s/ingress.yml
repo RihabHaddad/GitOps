@@ -4,16 +4,17 @@ metadata:
   name: nodejs-ingress
   namespace: app-ns
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /health
 spec:
+  ingressClassName: nginx
   rules:
-  - host: nodejs.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: nodejs-app 
-            port:
-              number: 3001    
+    - host: nodejs.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nodejs-app-stable
+                port:
+                  number: 3001
