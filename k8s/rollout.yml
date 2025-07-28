@@ -17,7 +17,7 @@ spec:
       serviceAccountName: vault-app-access
       containers:
         - name: nodejs-app
-          image: rihab26/nodejs-app:20250728-85d33af
+          image: rihab26/nodejs-app:20250728-7924602
           ports:
             - containerPort: 3001
             - containerPort: 9090
